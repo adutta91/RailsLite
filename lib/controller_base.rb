@@ -1,5 +1,6 @@
 require 'active_support'
 require 'active_support/core_ext'
+require 'active_support/inflector'
 require 'erb'
 require_relative './session'
 
@@ -19,9 +20,17 @@ class ControllerBase
 
   # Set the response status code and header
   def redirect_to(url)
+    # raises an error if a response is already created
     raise "double render error" if already_built_response?
+
+    # sets the status to a 3xx code, given that it's a redirect (convention?)
     @res.status = 302
+
+    # sets the response redirect location to the given url
     @res['location'] = url
+
+    # sets the instance variable to true, so another response will raise
+    # an exception
     @already_built_response = true
   end
 
@@ -29,15 +38,37 @@ class ControllerBase
   # Set the response's content type to the given type.
   # Raise an error if the developer tries to double render.
   def render_content(content, content_type)
+    # raises an error if a response is already created
     raise "double render error" if already_built_response?
+
+    # sets the response's content type to the given type
     @res['Content-Type'] = content_type
+
+    # populates the body of the response
     @res.write(content)
+
+    # sets the instance variable to true, so another response will raise
+    # an exception
     @already_built_response = true
   end
 
   # use ERB and binding to evaluate templates
   # pass the rendered html to render_content
   def render(template_name)
+    # finds controller name
+    controller_name = self.class.to_s.underscore
+
+    # finds path to file, following a convention
+    path = "views/#{controller_name}/#{template_name.to_s}.html.erb"
+
+    # reads content of file
+    template = File.read(path)
+
+    # evaluates ERB components of the template
+    contents = ERB.new(template).result(binding)
+
+    # calls render on the resulting template, given fixed text/html format
+    render_content(contents, 'text/html')
   end
 
   # method exposing a `Session` object
