@@ -29,6 +29,9 @@ class ControllerBase
     # sets the response redirect location to the given url
     @res['location'] = url
 
+    # updates the session cookie with the result
+    @session.store_session(@res)
+
     # sets the instance variable to true, so another response will raise
     # an exception
     @already_built_response = true
@@ -46,6 +49,9 @@ class ControllerBase
 
     # populates the body of the response
     @res.write(content)
+
+    # updates the session cookie with the result
+    @session.store_session(@res)
 
     # sets the instance variable to true, so another response will raise
     # an exception
@@ -65,6 +71,7 @@ class ControllerBase
     template = File.read(path)
 
     # evaluates ERB components of the template
+    #   'binding' allows use of instance variables within the ERB
     contents = ERB.new(template).result(binding)
 
     # calls render on the resulting template, given fixed text/html format
@@ -73,6 +80,7 @@ class ControllerBase
 
   # method exposing a `Session` object
   def session
+    @session ||= Session.new(@req)
   end
 
   # use this with the router to call action_name (:index, :show, :create...)
