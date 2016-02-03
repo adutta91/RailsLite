@@ -2,13 +2,14 @@ require 'active_support'
 require 'active_support/core_ext'
 require 'active_support/inflector'
 require 'erb'
+require 'byebug'
 require_relative './session'
 
 class ControllerBase
   attr_reader :req, :res, :params
 
   # Setup the controller
-  def initialize(req, res, route_params)
+  def initialize(req, res, route_params = {})
     @res = res
     @req = req
     @params = route_params
@@ -42,6 +43,7 @@ class ControllerBase
   # Set the response's content type to the given type.
   # Raise an error if the developer tries to double render.
   def render_content(content, content_type)
+
     # raises an error if a response is already created
     raise "double render error" if already_built_response?
 
@@ -52,7 +54,7 @@ class ControllerBase
     @res.write(content)
 
     # updates the session cookie with the result
-    @session.store_session(@res)
+    session.store_session(@res)
 
     # sets the instance variable to true, so another response will raise
     # an exception
@@ -86,5 +88,6 @@ class ControllerBase
 
   # use this with the router to call action_name (:index, :show, :create...)
   def invoke_action(name)
+    self.send(name)
   end
 end
