@@ -28,6 +28,6 @@ class Session
     # sets cookie named '_rails_lite_app', with a path to the root, and a
     # value of the cookie (cookie is serialized to json so that it is a
     # single string)
-    res.set_cookie('_rails_lite_app', {path: '/', value: @cookie.to_json })
+    res.set_cookie('_rails_lite_app', { path: '/', value: @cookie.to_json })
   end
 end
