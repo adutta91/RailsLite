@@ -4,6 +4,7 @@ require 'active_support/inflector'
 require 'erb'
 require 'byebug'
 require_relative './session'
+require_relative './flash'
 
 class ControllerBase
   attr_reader :req, :res, :params
@@ -32,7 +33,8 @@ class ControllerBase
     @res['location'] = url
 
     # updates the session cookie with the result
-    @session.store_session(@res)
+    session.store_session(@res)
+    flash.clear_flash(@res)
 
     # sets the instance variable to true, so another response will raise
     # an exception
@@ -56,6 +58,7 @@ class ControllerBase
     # updates the session cookie with the result
     session.store_session(@res)
 
+    flash.clear_flash(@res)
     # sets the instance variable to true, so another response will raise
     # an exception
     @already_built_response = true

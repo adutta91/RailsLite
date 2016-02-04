@@ -5,6 +5,7 @@ class MyController < ControllerBase
   def go
     session["count"] ||= 0
     session["count"] += 1
+    flash["errors"] = "hello" if session["count"] % 3 == 0
     render :counting_show
   end
 end

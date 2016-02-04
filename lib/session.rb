@@ -7,7 +7,7 @@ class Session
     # finds cookie values is there are any
     cookies = req.cookies['_rails_lite_app']
     if cookies
-      @cookie = JSON.parse(cookies)
+      @cookie = JSON.parse(cookies)	
     else
       # otherwise sets cookie to empty hash
       @cookie = {}
